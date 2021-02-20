@@ -10,5 +10,5 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthPassport {
-    SignEnum type() default SignEnum.FORM;
+    SignEnum type();
 }

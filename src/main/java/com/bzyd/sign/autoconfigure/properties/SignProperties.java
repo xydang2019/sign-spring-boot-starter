@@ -1,5 +1,6 @@
 package com.bzyd.sign.autoconfigure.properties;
 
+import com.bzyd.sign.common.enums.SignEnum;
 import com.bzyd.sign.common.model.BO.SignSecretConfig;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,6 +18,13 @@ public class SignProperties {
      * 是否启用
      */
     private boolean enabled;
+
+    /**
+     * 默认Content-Type，
+     * 1、application/x-www-form-urlencoded
+     * 2、application/json
+     */
+    private String defaultContentType = SignEnum.FORM.getTag();
 
     /**
      * 验证路径

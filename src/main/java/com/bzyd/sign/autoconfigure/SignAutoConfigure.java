@@ -49,7 +49,7 @@ public class SignAutoConfigure implements WebMvcConfigurer {
         }
         signSecretConfigHolders.add(DefaultSignSecretConfigHolder.getInstance(signProperties.getSecret()));
 
-        registry.addInterceptor(new SignInterceptor(signHelper,signSecretConfigHolders))
+        registry.addInterceptor(new SignInterceptor(signProperties.getDefaultContentType(),signHelper,signSecretConfigHolders))
                 .addPathPatterns(signProperties.getIncludePaths())
                 .excludePathPatterns(signProperties.getExcludePaths());
     }

@@ -22,21 +22,25 @@ import java.util.Map;
  */
 public class SignInterceptor implements HandlerInterceptor {
 
+    //默认Content-Type
+    private String defaultContentType;
+
     //签名帮助类
     private SignHelper signHelper;
 
     //签名密钥，key为appId，value为secretKey
-    private Map<String,String> signSecretMap;
+    private Map<String, String> signSecretMap;
 
-    public SignInterceptor(SignHelper signHelper, List<SignSecretConfigHolder> signSecretConfigHolders) {
+    public SignInterceptor(String defaultContentType, SignHelper signHelper, List<SignSecretConfigHolder> signSecretConfigHolders) {
+        this.defaultContentType = defaultContentType;
         this.signHelper = signHelper;
-        signSecretMap = new HashMap<>();
-        if (signSecretConfigHolders != null && !signSecretConfigHolders.isEmpty()){
+        this.signSecretMap = new HashMap<>();
+        if (signSecretConfigHolders != null && !signSecretConfigHolders.isEmpty()) {
             signSecretConfigHolders.forEach(signSecretConfigHolder -> {
                 List<SignSecretConfig> signSecretConfigList = signSecretConfigHolder.getSignSecretConfig();
-                if (signSecretConfigList != null && !signSecretConfigList.isEmpty()){
+                if (signSecretConfigList != null && !signSecretConfigList.isEmpty()) {
                     for (SignSecretConfig signSecretConfig : signSecretConfigList) {
-                        signSecretMap.put(signSecretConfig.getAppId(),signSecretConfig.getSecretKey());
+                        this.signSecretMap.put(signSecretConfig.getAppId(), signSecretConfig.getSecretKey());
                     }
                 }
             });
@@ -45,38 +49,29 @@ public class SignInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if(handler.getClass().isAssignableFrom(HandlerMethod.class)){
+        if (handler.getClass().isAssignableFrom(HandlerMethod.class)) {
             AuthPassport authPassport = ((HandlerMethod) handler).getMethodAnnotation(AuthPassport.class);
-            if(authPassport == null || authPassport.type().equals(SignEnum.FORM)){
-                //当没有标记@AuthPassport注解时，
-                //当标记@AuthPassport注解，且类型为SignEnum.FORM时
-                //按照application/x-www-form-urlencoded类型进行校验
+            //有标记@AuthPassport注解时优先按照注解中的类型进行校验，
+            //没有则按照默认Content-Type进行校验
+            if ((authPassport != null && authPassport.type().equals(SignEnum.FORM))
+                    || SignEnum.FORM.getTag().equals(defaultContentType)) {
                 JSONObject params = RequestUtil.getFormReqParams(request);
                 String appId = params.getString("appId");
-                String secretKey = getSecretKey(appId);
-                if(signHelper.checkSign(params,secretKey)){
+                String secretKey = this.signSecretMap.get(appId);
+                if (signHelper.checkSign(params, secretKey)) {
                     return true;
+                } else {
+                    throw new SignException();
                 }
-                throw new SignException();
-            }else if (authPassport.type().equals(SignEnum.JSON)){
-                //当标记@AuthPassport注解，且类型为SignEnum.JSON时
-                //按照application/json类型进行校验
+            }
 
-            }else if (authPassport.type().equals(SignEnum.NO_SIGN)){
-                //当标记@AuthPassport注解，且类型为SignEnum.NO_SIGN时
-                //不进行签名检验，直接放行
-                return true;
+            if ((authPassport != null && authPassport.type().equals(SignEnum.JSON))
+                    || SignEnum.JSON.getTag().equals(defaultContentType)) {
+
+
             }
         }
-        return true;
+        return false;
     }
 
-    /**
-     * 根据appId获取secretKey
-     * @param appId
-     * @return
-     */
-    private String getSecretKey(String appId) {
-        return signSecretMap.get(appId);
-    }
 }

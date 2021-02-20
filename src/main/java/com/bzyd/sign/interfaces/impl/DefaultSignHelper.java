@@ -65,7 +65,6 @@ public class DefaultSignHelper implements SignHelper {
 
     @Override
     public boolean checkSign(JSONObject params, String signKey) {
-
         try {
             if(params.get("sign") != null) {
                 String sign = params.getString("sign");

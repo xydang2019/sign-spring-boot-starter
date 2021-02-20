@@ -8,15 +8,19 @@ public enum SignEnum {
     /**
      * 以application/x-www-form-urlencoded的形式传输
      */
-    FORM,
+    FORM("application/x-www-form-urlencoded"),
 
     /**
      * 以application/json的形式传输
      */
-    JSON,
+    JSON("application/json");
 
-    /**
-     * 不签名
-     */
-    NO_SIGN;
-}
+    private final String tag;
+
+    SignEnum(String tag) {
+        this.tag = tag;
+    }
+
+    public String getTag() {
+        return tag;
+    }}
