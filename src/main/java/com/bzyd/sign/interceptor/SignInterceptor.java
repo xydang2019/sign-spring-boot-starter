@@ -53,16 +53,23 @@ public class SignInterceptor implements HandlerInterceptor {
             AuthPassport authPassport = ((HandlerMethod) handler).getMethodAnnotation(AuthPassport.class);
             JSONObject params = null;//请求参数
 
-            //1.application/x-www-form-urlencoded形式
-            if ((authPassport != null && authPassport.type().equals(SignEnum.FORM))
-                    || SignEnum.FORM.getTag().equals(defaultContentType)) {
-                params = RequestUtil.getFormReqParams(request);
-            }
+            if (authPassport != null){
+                if (authPassport.type().equals(SignEnum.FORM)) {
+                    params = RequestUtil.getFormReqParams(request);
+                }
 
-            //2.application/json形式
-            if ((authPassport != null && authPassport.type().equals(SignEnum.JSON))
-                    || SignEnum.JSON.getTag().equals(defaultContentType)) {
-                params = RequestUtil.getJsonReqParams(request);
+                if (authPassport.type().equals(SignEnum.JSON)) {
+                    params = RequestUtil.getJsonReqParams(request);
+                }
+
+            }else {
+                if (SignEnum.FORM.getTag().equals(defaultContentType)) {
+                    params = RequestUtil.getFormReqParams(request);
+                }
+
+                if (SignEnum.JSON.getTag().equals(defaultContentType)) {
+                    params = RequestUtil.getJsonReqParams(request);
+                }
             }
 
             if (params == null){

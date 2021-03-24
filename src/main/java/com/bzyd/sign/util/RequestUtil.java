@@ -48,7 +48,6 @@ public class RequestUtil {
 
             result.put(name, value);
         }
-
         return result;
     }
 

@@ -30,18 +30,14 @@ import static com.bzyd.sign.common.constants.SignConstant.CONFIG_PREFIX;
 @ConditionalOnProperty(prefix = CONFIG_PREFIX,value = "enabled",havingValue = "true")
 public class SignAutoConfigure implements WebMvcConfigurer {
 
+    @Autowired
     private SignProperties signProperties;
 
+    @Autowired(required = false)
     private SignHelper signHelper;
 
-    private List<SignSecretConfigHolder> signSecretConfigHolders;
-
     @Autowired(required = false)
-    public SignAutoConfigure(SignHelper signHelper, List<SignSecretConfigHolder> signSecretConfigHolders, SignProperties signProperties) {
-        this.signHelper = signHelper;
-        this.signSecretConfigHolders = signSecretConfigHolders;
-        this.signProperties = signProperties;
-    }
+    private List<SignSecretConfigHolder> signSecretConfigHolders;
 
     //配置签名拦截器
     @Override
