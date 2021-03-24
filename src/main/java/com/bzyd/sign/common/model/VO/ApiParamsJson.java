@@ -1,12 +1,11 @@
 package com.bzyd.sign.common.model.VO;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class ApiParamsForm implements Serializable {
+public class ApiParamsJson<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -22,14 +21,10 @@ public class ApiParamsForm implements Serializable {
     /**
      * 请求参数
      */
-    private String body;
+    private T body;
 
     /**
      * 客户端id
      */
     private String appId;
-
-    public <T>T getBody(Class<T> t) {
-        return JSON.parseObject(body,t);
-    }
 }
