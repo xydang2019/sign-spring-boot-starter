@@ -16,22 +16,9 @@ public class DefaultSignHelper implements SignHelper {
     private DateTimeFormatter df1;
     private DateTimeFormatter df2;
 
-    private DefaultSignHelper() {
+    public DefaultSignHelper() {
         df1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         df2 = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-    }
-
-    private static volatile SignHelper signHelper = null;
-
-    public static SignHelper getInstance(){
-        if (signHelper == null){
-            synchronized (DefaultSignHelper.class){
-                if (signHelper == null){
-                    signHelper = new DefaultSignHelper();
-                }
-            }
-        }
-        return signHelper;
     }
 
     @Override

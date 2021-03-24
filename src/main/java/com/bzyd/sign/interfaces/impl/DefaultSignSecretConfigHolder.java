@@ -12,23 +12,9 @@ public class DefaultSignSecretConfigHolder implements SignSecretConfigHolder {
 
     private List<SignSecretConfig> signSecretConfigList;
 
-    private DefaultSignSecretConfigHolder(List<SignSecretConfig> signSecretConfigList) {
+    public DefaultSignSecretConfigHolder(List<SignSecretConfig> signSecretConfigList) {
         this.signSecretConfigList = signSecretConfigList;
     }
-
-    private static volatile SignSecretConfigHolder signSecretConfigHolder = null;
-
-    public static SignSecretConfigHolder getInstance(List<SignSecretConfig> signSecretConfigList){
-        if (signSecretConfigHolder == null){
-            synchronized (DefaultSignSecretConfigHolder.class){
-                if (signSecretConfigHolder == null){
-                    signSecretConfigHolder = new DefaultSignSecretConfigHolder(signSecretConfigList);
-                }
-            }
-        }
-        return signSecretConfigHolder;
-    }
-
 
     @Override
     public List<SignSecretConfig> getSignSecretConfig() {

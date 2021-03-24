@@ -1,8 +1,11 @@
 package com.bzyd.sign.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,5 +50,21 @@ public class RequestUtil {
         }
 
         return result;
+    }
+
+    /**
+     * 获取请求参数(application/json方式)
+     *
+     * @param request
+     * @return
+     */
+    public static JSONObject getJsonReqParams(HttpServletRequest request) {
+        JSONObject params = null;
+        try {
+            params = JSON.parseObject(request.getInputStream(), Charset.forName("UTF-8"), JSONObject.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return params;
     }
 }

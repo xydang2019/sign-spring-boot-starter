@@ -48,27 +48,33 @@ public class SignInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
         if (handler.getClass().isAssignableFrom(HandlerMethod.class)) {
             AuthPassport authPassport = ((HandlerMethod) handler).getMethodAnnotation(AuthPassport.class);
-            //有标记@AuthPassport注解时优先按照注解中的类型进行校验，
-            //没有则按照默认Content-Type进行校验
+            JSONObject params = null;//请求参数
+
+            //1.application/x-www-form-urlencoded形式
             if ((authPassport != null && authPassport.type().equals(SignEnum.FORM))
                     || SignEnum.FORM.getTag().equals(defaultContentType)) {
-                JSONObject params = RequestUtil.getFormReqParams(request);
-                String appId = params.getString("appId");
-                String secretKey = this.signSecretMap.get(appId);
-                if (signHelper.checkSign(params, secretKey)) {
-                    return true;
-                } else {
-                    throw new SignException();
-                }
+                params = RequestUtil.getFormReqParams(request);
             }
 
+            //2.application/json形式
             if ((authPassport != null && authPassport.type().equals(SignEnum.JSON))
                     || SignEnum.JSON.getTag().equals(defaultContentType)) {
+                params = RequestUtil.getJsonReqParams(request);
+            }
 
+            if (params == null){
+                throw new RuntimeException("Failed to get request parameters...");
+            }
 
+            String appId = params.getString("appId");
+            String secretKey = this.signSecretMap.get(appId);
+            if (signHelper.checkSign(params, secretKey)) {
+                return true;
+            } else {
+                throw new SignException();
             }
         }
         return false;
